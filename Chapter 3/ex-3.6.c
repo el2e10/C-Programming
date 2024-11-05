@@ -41,14 +41,12 @@ void itoa(long n, char s[], int min_width) {
   do {
     char l = n % 10 + '0';
     s[i++] = l;
-    // printf("%c\n", l);
   } while ((n /= 10) > 0);
 
   if (sign < 0) {
     s[i++] = '-';
   }
 
-  printf("%d\n", i);
   for (; i < min_width; i++)
     s[i] = '0';
 
