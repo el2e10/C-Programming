@@ -8,20 +8,59 @@
 
 int sp = 0, input_index = 0;
 int stack[INPUT_SIZE];
+int dup_stack[INPUT_SIZE];
 
 char gettop(char[]);
 int pop();
 void push(int);
 
-void print_array(char s[]) {
+void print_array(int *s) {
 	for (int i = 0; s[i] != '\0'; i++) {
 		printf("%c", s[i]);
 	}
 	printf("\n");
 }
 
-int main() {
-	char input[INPUT_SIZE] = "-10 -5 + 20 * -2 /";
+void print_stack(void) {
+	if (sp <= 0) {
+		printf("[]\n");
+		return;
+	}
+	int i;
+	printf("[");
+	for (i = 0; i < sp; i++) {
+		if (i == sp-1) {
+			printf("%d]\n", stack[i]);
+		} else {
+			printf("%d, ", stack[i]);
+		}
+	}
+}
+
+void swap_top(void) {
+	if (sp < 2) {
+		return;
+	}
+	int tmp = stack[0];
+	stack[0] = stack[1];
+	stack[1] = tmp;
+}
+
+void duplicate_stack(int *dup_stack) {
+	int i;
+	for (i = 0; i < sp; i++) {
+		dup_stack[i] = stack[i];
+	}
+}
+
+void clear_stack(void) {
+	for (int i = sp; i > 0; --i) {
+		pop();
+	}
+}
+
+int main(void) {
+	char input[INPUT_SIZE] = "-10 2";
 	char number[INPUT_SIZE];
 	char c;
 
@@ -48,7 +87,6 @@ int main() {
 			op2 = pop();
 			op1 = pop();
 			result = op1 - op2;
-			printf("%d %d", op2, op1);
 			push(result);
 			break;
 		case '*':
@@ -66,16 +104,17 @@ int main() {
 			op2 = pop();
 			result = pop() % op2;
 			push(result);
-			printf("Modulus operator %d %d\n", op2, result);
 			break;
 		}
 	}
+	print_stack();
+	clear_stack();
+	print_stack();
 	printf("The final result of stack is %d\n", stack[0]);
 	return 0;
 }
 
 void push(int s) {
-
 	if (isdigit(s)) {
 		stack[sp++] = s - '0';
 	} else {
@@ -83,12 +122,13 @@ void push(int s) {
 	}
 }
 
-int pop() { return stack[--sp]; }
+int pop(void) { return stack[--sp]; }
 
 char gettop(char s[]) {
 	if (isdigit(s[input_index])) {
 		return NUMBER;
-	} else if (s[input_index] == '-' && s[input_index + 1] != ' ' && s[input_index + 1] != '\0') {
+	} else if (s[input_index] == '-' && s[input_index + 1] != ' ' &&
+			   s[input_index + 1] != '\0') {
 		return NUMBER;
 	} else {
 		return s[input_index++];
