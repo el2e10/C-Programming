@@ -12,12 +12,12 @@
 #define VAR '4'
 
 int sp = 0, input_index = 0;
-int stack[INPUT_SIZE];
+float stack[INPUT_SIZE];
 int dup_stack[INPUT_SIZE];
 
 char gettop(char[]);
-int pop();
-void push(int);
+float pop();
+void push(float);
 
 void print_array(int *s) {
 	for (int i = 0; s[i] != '\0'; i++) {
@@ -35,9 +35,9 @@ void print_stack(void) {
 	printf("[");
 	for (i = 0; i < sp; i++) {
 		if (i == sp - 1) {
-			printf("%d]\n", stack[i]);
+			printf("%f]\n", stack[i]);
 		} else {
-			printf("%d, ", stack[i]);
+			printf("%f, ", stack[i]);
 		}
 	}
 }
@@ -79,15 +79,15 @@ void ungets(char input[], char new[]) {
 
 int main(void) {
 	int valid_expression = 1;
-	char input[INPUT_SIZE] = "3 8 ";
+	char input[INPUT_SIZE] = "3 -8.3 2 - +";
 	char number[INPUT_SIZE];
 	char c;
 
-	ungets(input, "9 3 - + +");
+	// ungets(input, "9 3 - + +");
 
 	while ((c = gettop(input)) != '\0' && valid_expression) {
-		int result;
-		int op2, op1;
+		float result;
+		float op2, op1;
 		switch (c) {
 			int i = 0;
 		case NUMBER:
@@ -96,18 +96,20 @@ int main(void) {
 				number[i] = input[input_index];
 			}
 			number[i] = '\0';
-			push(atoi(number));
+			push(atof(number));
 			break;
 		case '+':
 			op2 = pop();
 			op1 = pop();
 			result = op1 + op2;
+			printf("Add %f\n", result);
 			push(result);
 			break;
 		case '-':
-			op2 = pop();
 			op1 = pop();
+			op2 = pop();
 			result = op1 - op2;
+			printf("Sub %f\n", result);
 			push(result);
 			break;
 		case '*':
@@ -123,22 +125,19 @@ int main(void) {
 			break;
 		case '%':
 			op2 = pop();
-			result = pop() % op2;
+			result = (int)pop() % (int)op2;
 			push(result);
 			break;
 		case SIN:
 			push(sin(pop()));
-			printf("sin function detected\n");
 			break;
 		case POW:
 			op2 = pop();
 			op1 = pop();
 			push(pow(op2, op1));
-			printf("pow function detected\n");
 			break;
 		case EXP:
 			push(exp(pop()));
-			printf("exp function detected\n");
 			break;
 		case VAR:
 			/*
@@ -153,19 +152,19 @@ int main(void) {
 			break;
 		}
 	}
-	printf("The final result of stack is %d\n", stack[0]);
+	printf("The final result of stack is %.2f\n", stack[0]);
 	return 0;
 }
 
-void push(int s) {
+void push(float s) {
 	if (isdigit(s)) {
-		stack[sp++] = s - '0';
+		stack[sp++] = s;
 	} else {
 		stack[sp++] = s;
 	}
 }
 
-int pop(void) { return stack[--sp]; }
+float pop(void) { return stack[--sp]; }
 
 char gettop(char s[]) {
 	if (isdigit(s[input_index])) {
